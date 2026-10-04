@@ -520,17 +520,6 @@ function alumniCard(item) {
       .filter(Boolean)
       .join(' · ');
 
-  const role =
-    document.createElement('p');
-
-  role.textContent =
-    [
-      pick(item, 'Designation', 'designation'),
-      pick(item, 'Organization', 'organization')
-    ]
-      .filter(Boolean)
-      .join(' · ') ||
-    'Professional profile';
 
   const location =
     document.createElement('p');
@@ -548,7 +537,6 @@ function alumniCard(item) {
 
   card.appendChild(name);
   card.appendChild(meta);
-  card.appendChild(role);
 
   if (location.textContent) {
     card.appendChild(location);
