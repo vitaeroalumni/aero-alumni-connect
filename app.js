@@ -309,6 +309,7 @@ function initDirectoryPage() {
 
   loadData('alumni.json')
     .then(function(payload) {
+
       const alumni =
         Array.isArray(payload.items)
           ? payload.items
@@ -360,14 +361,17 @@ function initDirectoryPage() {
           }
         );
       }
+
     })
     .catch(function(error) {
+
       if (loading) {
         loading.hidden = true;
       }
 
       if (errorBox) {
         errorBox.hidden = false;
+
         errorBox.textContent =
           'The alumni directory could not be loaded. Please try again shortly.';
       }
@@ -376,13 +380,16 @@ function initDirectoryPage() {
         'Directory error:',
         error
       );
+
     });
 }
+
 
 function populateYearFilter(
   select,
   records
 ) {
+
   if (!select) return;
 
   const years =
@@ -390,6 +397,7 @@ function populateYearFilter(
       new Set(
         records
           .map(function(item) {
+
             return String(
               pick(
                 item,
@@ -397,23 +405,30 @@ function populateYearFilter(
                 'graduationYear'
               ) || ''
             ).trim();
+
           })
           .filter(Boolean)
       )
     ).sort(function(a, b) {
+
       return Number(b) - Number(a);
+
     });
 
   years.forEach(function(value) {
+
     const option =
       document.createElement('option');
 
     option.value = value;
+
     option.textContent = value;
 
     select.appendChild(option);
+
   });
 }
+
 
 function renderDirectory(
   records,
@@ -422,6 +437,7 @@ function renderDirectory(
   search,
   year
 ) {
+
   if (!grid) return;
 
   const q =
@@ -436,24 +452,72 @@ function renderDirectory(
 
   const filtered =
     records.filter(function(item) {
+
       const haystack = [
-        pick(item, 'Full_Name', 'fullName'),
-        pick(item, 'Degree', 'degree'),
-        pick(item, 'Organization', 'organization'),
-        pick(item, 'Designation', 'designation'),
-        pick(item, 'Industry_Sector', 'industrySector'),
-        pick(item, 'Technical_Expertise', 'technicalExpertise'),
-        pick(item, 'Current_City', 'currentCity'),
-        pick(item, 'Current_Country', 'currentCountry')
+
+        pick(
+          item,
+          'Full_Name',
+          'fullName'
+        ),
+
+        pick(
+          item,
+          'Degree',
+          'degree'
+        ),
+
+        pick(
+          item,
+          'Organization',
+          'organization'
+        ),
+
+        pick(
+          item,
+          'Designation',
+          'designation'
+        ),
+
+        pick(
+          item,
+          'Industry_Sector',
+          'industrySector'
+        ),
+
+        pick(
+          item,
+          'Technical_Expertise',
+          'technicalExpertise'
+        ),
+
+        pick(
+          item,
+          'Current_City',
+          'currentCity'
+        ),
+
+        pick(
+          item,
+          'Current_Country',
+          'currentCountry'
+        )
+
       ]
         .join(' ')
         .toLowerCase();
 
       return (
+
         (!q ||
-          haystack.indexOf(q) >= 0) &&
+          haystack.indexOf(q) >= 0
+        )
+
+        &&
+
         (
           !selectedYear ||
+
           String(
             pick(
               item,
@@ -462,29 +526,43 @@ function renderDirectory(
             )
           ) === selectedYear
         )
+
       );
+
     });
 
   grid.innerHTML = '';
 
   filtered.forEach(function(item) {
+
     grid.appendChild(
       alumniCard(item)
     );
+
   });
 
   if (empty) {
+
     empty.hidden =
       filtered.length !== 0;
+
   }
+
 }
 
+
 function alumniCard(item) {
+
   const card =
     document.createElement('article');
 
   card.className =
     'profile-card';
+
+
+  /* -------------------------------------------------
+     NAME
+     ------------------------------------------------- */
 
   const name =
     document.createElement('h3');
@@ -497,6 +575,11 @@ function alumniCard(item) {
     ) ||
     'Alumni';
 
+
+  /* -------------------------------------------------
+     DEGREE + GRADUATION YEAR
+     ------------------------------------------------- */
+
   const meta =
     document.createElement('p');
 
@@ -504,7 +587,11 @@ function alumniCard(item) {
     'profile-meta';
 
   const degree =
-    pick(item, 'Degree', 'degree');
+    pick(
+      item,
+      'Degree',
+      'degree'
+    );
 
   const year =
     pick(
@@ -514,12 +601,21 @@ function alumniCard(item) {
     );
 
   meta.textContent =
-    [degree, year
-      ? 'Class of ' + year
-      : '']
+    [
+      degree,
+
+      year
+        ? 'Class of ' + year
+        : ''
+
+    ]
       .filter(Boolean)
       .join(' · ');
 
+
+  /* -------------------------------------------------
+     LOCATION
+     ------------------------------------------------- */
 
   const location =
     document.createElement('p');
@@ -529,18 +625,49 @@ function alumniCard(item) {
 
   location.textContent =
     [
-      pick(item, 'Current_City', 'currentCity'),
-      pick(item, 'Current_Country', 'currentCountry')
+
+      pick(
+        item,
+        'Current_City',
+        'currentCity'
+      ),
+
+      pick(
+        item,
+        'Current_Country',
+        'currentCountry'
+      )
+
     ]
       .filter(Boolean)
       .join(', ');
 
+
+  /* -------------------------------------------------
+     APPEND BASIC PROFILE INFORMATION
+     
+     IMPORTANT:
+     Current_Status
+     Organization
+     Designation
+
+     are NOT displayed here.
+     ------------------------------------------------- */
+
   card.appendChild(name);
+
   card.appendChild(meta);
 
   if (location.textContent) {
+
     card.appendChild(location);
+
   }
+
+
+  /* -------------------------------------------------
+     INDUSTRY / TECHNICAL EXPERTISE
+     ------------------------------------------------- */
 
   const sector =
     pick(
@@ -557,15 +684,20 @@ function alumniCard(item) {
     );
 
   if (sector || expertise) {
+
     const tags =
       document.createElement('div');
 
     tags.className =
       'tag-list';
 
-    [sector, expertise]
+    [
+      sector,
+      expertise
+    ]
       .filter(Boolean)
       .forEach(function(text) {
+
         const tag =
           document.createElement('span');
 
@@ -576,10 +708,17 @@ function alumniCard(item) {
           text;
 
         tags.appendChild(tag);
+
       });
 
     card.appendChild(tags);
+
   }
+
+
+  /* -------------------------------------------------
+     ACTIONS
+     ------------------------------------------------- */
 
   const actions =
     document.createElement('div');
@@ -587,7 +726,13 @@ function alumniCard(item) {
   actions.className =
     'card-actions';
 
+
+  /* -------------------------------------------------
+     MENTOR BADGE
+     ------------------------------------------------- */
+
   if (
+
     String(
       pick(
         item,
@@ -595,7 +740,9 @@ function alumniCard(item) {
         'interestedMentoring'
       )
     ).toLowerCase() === 'yes'
+
   ) {
+
     const badge =
       document.createElement('span');
 
@@ -606,7 +753,13 @@ function alumniCard(item) {
       'Mentor';
 
     actions.appendChild(badge);
+
   }
+
+
+  /* -------------------------------------------------
+     LINKEDIN
+     ------------------------------------------------- */
 
   const linkedin =
     pick(
@@ -616,6 +769,7 @@ function alumniCard(item) {
     );
 
   if (linkedin) {
+
     const link =
       document.createElement('a');
 
@@ -635,17 +789,28 @@ function alumniCard(item) {
       'LinkedIn';
 
     if (link.href) {
+
       actions.appendChild(link);
+
     }
+
   }
+
+
+  /* -------------------------------------------------
+     APPEND ACTIONS
+     ------------------------------------------------- */
 
   if (actions.children.length) {
+
     card.appendChild(actions);
+
   }
 
-  return card;
-}
 
+  return card;
+
+}
 /* =====================================================================
    CONTENT PAGES
    ===================================================================== */
